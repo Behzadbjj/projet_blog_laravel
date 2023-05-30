@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 use App\Models\Post;
+use App\Models\Chirp;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -18,7 +19,7 @@ class PostController extends Controller
         $posts = Post::latest()->get();
         
         // On transmet les Post à la vue "/resources/views/posts/index.blade.php"
-        return view("posts.index", compact("posts"));
+        return view("posts.index",compact("posts"));
     }
 
     // Créer un nouveau Post
@@ -28,44 +29,48 @@ class PostController extends Controller
     }
 
     // Enregistrer un nouveau Post
-    public function store(Request $request): RedirectResponse {
+    public function store(Request $request): RedirectResponse
+    {
         // 1. La validation
-        
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'content'=> 'required|string|max:10000',
-                "picture"=> 'required|image|max:1024'
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content'=> 'required|string|max:10000',
+            'picture'=> 'required|image|max:1024',
         ]);
-        $chemin_image = $request->picture->store("posts");
-        $validated["picture"] = $chemin_image;
-
-        $request->user()->posts()->create($validated);
-
+    
         // 2. On upload l'image dans "/storage/app/public/posts"
+        $chemin_image = $request->picture->store("posts");
+    
+        // 3. On crée le nouveau post
+        $post = $request->user()->posts()->create([
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'picture' => $chemin_image,
+        ]);
+    
+        // 4. On redirige vers la page du post nouvellement créé
+        return redirect()->route('posts.show', $post->id);
+    }
+
+
+
+
+    public function show(Post $post)
+    {
+        $chirps = $post->chirps()->with('user')->latest()->get();
+
+        return view('posts.show', compact('post', 'chirps'));
+
         
-
-    //     // // 3. On enregistre les informations du Post
-    //     Post::create([
-    //         "title" => $request->title,
-    //         "picture" => $chemin_image,
-    //         "content" => $request->content,
-    //     ]);
-
-    //     // 4. On retourne vers tous les posts : route("posts.index")
-        return redirect(route("posts.index"));
     }
 
-    // Afficher un Post
-    public function show(Post $post ) {
-        return view("posts.show", compact("post"));
-    }
 
     // Editer un Post enregistré
     public function edit(Post $post)  :View
     {
         
         
-        $this->authorize('edit', $post);
+        // $this->authorize('edit', $post);
         return view("posts.edit", compact("post"));
     }
 
