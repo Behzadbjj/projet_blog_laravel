@@ -31,21 +31,24 @@ class ChirpController extends Controller
         //
     }
 
-
     public function store(Post $post, Request $request)
     {
-        $validated = $request->validate([
-            'message' => 'required|string|max:255',
-        ]);
-
-        $chirp = new Chirp();
-        $chirp->message = $validated['message'];
-        $chirp->user_id = auth()->id();
-        $chirp->post_id = $post->id;
-        $chirp->save();
-        return redirect()->back()->with('success', 'Chirp ajouté ');
+        if (auth()->check()) {
+            $validated = $request->validate([
+                'message' => 'required|string|max:255',
+            ]);
+    
+            $chirp = new Chirp();
+            $chirp->message = $validated['message'];
+            $chirp->user_id = auth()->id();
+            $chirp->post_id = $post->id;
+            $chirp->save();
+            return redirect()->back()->with('success', 'Chirp ajouté ');
+        } else {
+            return redirect('/posts/show/' . $post->id);
+        }
     }
-
+    
 
 
 
