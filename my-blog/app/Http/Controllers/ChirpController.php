@@ -33,6 +33,8 @@ class ChirpController extends Controller
 
     public function store(Post $post, Request $request)
     {
+        
+
         if (auth()->check()) {
             $validated = $request->validate([
                 'message' => 'required|string|max:255',
@@ -47,6 +49,7 @@ class ChirpController extends Controller
         } else {
             return redirect('/posts/show/' . $post->id);
         }
+        
     }
     
 

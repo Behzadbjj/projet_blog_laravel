@@ -5,19 +5,8 @@ use App\Http\Controllers\ChirpController;
 use Illuminate\Support\Facades\Route;
 
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 
 
-
-
-
-Route::get('/', [PostController::class, 'index'])
-    ->name('posts.index');
-    
-Route::get('/posts/show{post}', [PostController::class, 'show'])
-->name('posts.show');
 
 Route::get('/dashboard', function () {
     return view('/dashboard');
@@ -34,7 +23,10 @@ Route::middleware('auth')->group(function () {
 });
 // La route-ressource => Les routes "post.*"
 
-// route('posts.show', ['post' => $post->id]);
+Route::get('/', [PostController::class, 'index'])
+    ->name('posts.index');
+    Route::get('/posts/show{post}', [PostController::class, 'show'])
+    ->name('posts.show');
 Route::resource("posts", PostController::class)
 ->only([ 'store', 'edit', 'create','update', 'destroy'])
     ->middleware(['auth', 'verified']);
