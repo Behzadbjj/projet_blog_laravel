@@ -15,7 +15,7 @@ Page d'Accueil - Consultation d'Articles
 
 #Installation et Configuration
 Assurez-vous d'avoir PHP et Composer installés sur votre système.
-Clonez ce dépôt : git clone https://github.com/votre-utilisateur/projet-blog-laravel.git
+Clonez ce dépôt : https://github.com/Behzadbjj/projet_blog_laravel.git
 Accédez au répertoire du projet : cd projet-blog-laravel
 Copiez le fichier .env.example en .env et configurez la base de données.
 Générez une clé d'application : php artisan key:generate
